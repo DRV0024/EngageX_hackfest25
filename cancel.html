@@ -1,0 +1,123 @@
+<!-- Save this as cancel.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cancel Ticket - Chillr</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(270deg, #2b1055, #7597de);
+      background-size: 400% 400%;
+      animation: gradientShift 20s ease infinite;
+      margin: 0;
+      padding: 0;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .cancel-container {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 0 15px #00ffc855;
+      width: 350px;
+      max-width: 90%;
+      text-align: center;
+    }
+
+    .cancel-container h1 {
+      margin-bottom: 25px;
+      color: #00ffc8;
+      text-shadow: 0 0 10px #00ffc8aa;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 10px;
+      border: none;
+      font-size: 16px;
+    }
+
+    .btn {
+      background: #00ffc8;
+      color: #2b1055;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 16px;
+      margin-top: 15px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00ffc8;
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      background: white;
+      color: #2b1055;
+      transform: scale(1.05);
+    }
+
+    .login-link {
+      margin-top: 20px;
+      display: block;
+      color: #00ffc8;
+      font-weight: bold;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cancel-container">
+    <h1>Cancel Ticket</h1>
+    <input type="text" id="username" placeholder="Enter Your Name" required />
+    <input type="text" id="ticketId" placeholder="Enter Ticket ID to Cancel" required />
+    <button class="btn" onclick="cancelTicket()">Cancel Ticket</button>
+    <a class="login-link" href="login.html">Back to Login</a>
+  </div>
+
+  <script>
+    function cancelTicket() {
+      const name = document.getElementById('username').value.trim();
+      const ticketId = document.getElementById('ticketId').value.trim();
+
+      if (!name || !ticketId) {
+        alert("Please fill in all fields to cancel your ticket.");
+        return;
+      }
+
+      const record = localStorage.getItem(ticketId);
+      if (!record) {
+        alert("No such ticket found.");
+        return;
+      }
+
+      const data = JSON.parse(record);
+      if (data.name.toLowerCase() !== name.toLowerCase()) {
+        alert("Ticket does not belong to this name.");
+        return;
+      }
+
+      localStorage.removeItem(ticketId);
+      alert(`Ticket ID ${ticketId} has been successfully cancelled.`);
+      window.location.href = 'login.html';
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Event Details - Chillr</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(270deg, #2b1055, #7597de);
+      color: white;
+      padding: 30px;
+    }
+
+    h1, h2 {
+      color: #00ffc8;
+      text-align: center;
+    }
+
+    .event-details {
+      background: #1e1e2f;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px #00ffc8;
+      max-width: 700px;
+      margin: 0 auto 40px auto;
+    }
+
+    .event-details p {
+      font-size: 18px;
+      margin: 8px 0;
+    }
+
+    .chart-container {
+      max-width: 800px;
+      margin: 30px auto;
+      background: #1e1e2f;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px #00ffc8;
+    }
+
+    canvas {
+      margin: 20px auto;
+      display: block;
+    }
+    .event-card {
+  background-color: #1e1e2f;
+  padding: 20px;
+  margin: 15px 0;
+  border-radius: 10px;
+  box-shadow: 0 0 10px #00ffc8;
+}
+
+.event-card h3 {
+  color: #00ffc8;
+}
+
+.event-card button {
+  background-color: #00ffc8;
+  color: #2b1055;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.event-card button:hover {
+  background-color: white;
+  color: #2b1055;
+}
+  </style>
+</head>
+<body>
+
+  <h1>Event Details</h1>
+
+  <div class="event-details">
+    <p><strong>Event Name:</strong> Chillr Fest 2025</p>
+    <p><strong>Event ID:</strong> EVT12345</p>
+    <p><strong>Date:</strong> April 10, 2025</p>
+    <p><strong>Venue:</strong> Mumbai Convention Center</p>
+    <p><strong>Organizer:</strong> Chillr Events Pvt. Ltd.</p>
+  </div>
+
+  <h2>Ticket Sales Analysis</h2>
+
+  <div class="chart-container">
+    <h3 style="text-align:center">Week-wise Revenue</h3>
+    <canvas id="weekRevenueChart"></canvas>
+  </div>
+
+  <div class="chart-container">
+    <h3 style="text-align:center">Month-wise Revenue</h3>
+    <canvas id="monthRevenueChart"></canvas>
+  </div>
+
+  <div class="chart-container">
+    <h3 style="text-align:center">Region-wise Sales</h3>
+    <canvas id="regionChart"></canvas>
+  </div>
+
+  <div class="chart-container">
+    <h3 style="text-align:center">Age-wise Ticket Classification</h3>
+    <canvas id="ageChart"></canvas>
+  </div>
+
+  <script>
+    // Week-wise Revenue Chart
+    new Chart(document.getElementById("weekRevenueChart"), {
+      type: "bar",
+      data: {
+        labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
+        datasets: [{
+          label: "Revenue (INR)",
+          data: [15000, 25000, 18000, 22000],
+          backgroundColor: "#00ffc8"
+        }]
+      },
+      options: {
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+
+    // Month-wise Revenue Chart
+    new Chart(document.getElementById("monthRevenueChart"), {
+      type: "bar",
+      data: {
+        labels: ["January", "February", "March", "April"],
+        datasets: [{
+          label: "Revenue (INR)",
+          data: [40000, 45000, 50000, 60000],
+          backgroundColor: "#00ffc8"
+        }]
+      },
+      options: {
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+
+    // Region-wise Pie Chart
+    new Chart(document.getElementById("regionChart"), {
+      type: "pie",
+      data: {
+        labels: ["North", "South", "East", "West"],
+        datasets: [{
+          label: "Ticket Sales",
+          data: [200, 300, 150, 250],
+          backgroundColor: ["#00ffc8", "#33c4ff", "#ffc233", "#ff33a6"]
+        }]
+      }
+    });
+
+    // Age-wise Pie Chart
+    new Chart(document.getElementById("ageChart"), {
+      type: "pie",
+      data: {
+        labels: ["Below 18", "18-25", "26-40", "41+"],
+        datasets: [{
+          label: "Ticket Classification",
+          data: [80, 220, 150, 50],
+          backgroundColor: ["#ff33a6", "#00ffc8", "#ffc233", "#33c4ff"]
+        }]
+      }
+    });
+  </script>
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Search by event name...">
+    <button onclick="searchEvents()">Search</button>
+  </div>
+  
+  <div id="eventList" class="event-list">
+    <!-- Dynamic results will be inserted here -->
+  </div>
+  
+<script>
+    async function searchEvents() {
+      const searchQuery = document.getElementById("searchInput").value;
+  
+      const response = await fetch(`http://localhost:5000/api/event/search?eventName=${encodeURIComponent(searchQuery)}`);
+      const events = await response.json();
+  
+      const eventList = document.getElementById("eventList");
+      eventList.innerHTML = "";
+  
+      if (events.length === 0) {
+        eventList.innerHTML = "<p>No events found.</p>";
+        return;
+      }
+  
+      events.forEach(event => {
+        const eventCard = document.createElement("div");
+        eventCard.className = "event-card";
+        eventCard.innerHTML = `
+          <h3>${event.eventName}</h3>
+          <p><strong>Organizer:</strong> ${event.organizerName}</p>
+          <p><strong>Date:</strong> ${new Date(event.date).toDateString()}</p>
+          <p><strong>Venue:</strong> ${event.venue}</p>
+          <button onclick="viewDetails('${event.eventId}')">View Details</button>
+        `;
+        eventList.appendChild(eventCard);
+      });
+    }
+  
+    function viewDetails(eventId) {
+      window.location.href = `event-detail.html?eventId=${eventId}`;
+    }
+  </script>
+  
+</body>
+</html>

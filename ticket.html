@@ -72,37 +72,71 @@
 
   <div class="ticket-card" id="ticketCard">
     <h1>🎫 Chillr Ticket Confirmation</h1>
-    <div class="ticket-info" id="ticketInfo">
-      <!-- Ticket info loaded here -->
-    </div>
-    <div class="ticket-id" id="ticketId">
-      <!-- Ticket ID -->
-    </div>
+    <div class="ticket-info" id="ticketInfo"></div>
+    <div class="ticket-id" id="ticketId"></div>
     <button class="btn" onclick="window.print()">Download / Print Ticket</button>
   </div>
-
   <script>
-    const name = localStorage.getItem("name");
-    const eventName = localStorage.getItem("eventName");
-    const eventId = localStorage.getItem("eventId");
-    const total = localStorage.getItem("totalPrice");
-    const type = localStorage.getItem("ticketType");
-    const tickets = localStorage.getItem("tickets");
-    const paymentMethod = localStorage.getItem("paymentMethod");
-
-    const ticketID = "CHILLR-" + Math.random().toString(36).substr(2, 9).toUpperCase();
-
+    function generateTicketId() {
+      const random = Math.random().toString(36).substr(2, 9).toUpperCase();
+      return "CHILLR-" + random;
+    }
+  
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param) || "N/A";
+    }
+  
+    const name = getQueryParam("name");
+    const eventName = getQueryParam("eventName");
+    const eventId = getQueryParam("eventId");
+    const tickets = Number(getQueryParam("tickets"));
+    const ticketType = getQueryParam("ticketType").toUpperCase();
+    const paymentMethod = getQueryParam("paymentMethod");
+  
+    const pricePerTicket = {
+      REGULAR: 200,
+      VIP: 350,
+      PREMIUM: 500
+    };
+    const unitPrice = pricePerTicket[ticketType] || 0;
+    const total = unitPrice * tickets;
+  
+    const ticketID = generateTicketId();
+  
     document.getElementById("ticketInfo").innerHTML = `
       <strong>Name:</strong> ${name}<br>
       <strong>Event:</strong> ${eventName}<br>
       <strong>Event ID:</strong> ${eventId}<br>
-      <strong>Tickets:</strong> ${tickets} (${type})<br>
+      <strong>Tickets:</strong> ${tickets} (${ticketType})<br>
       <strong>Paid via:</strong> ${paymentMethod}<br>
       <strong>Total Paid:</strong> ₹${total}
     `;
-
     document.getElementById("ticketId").innerText = `Ticket ID: ${ticketID}`;
+  
+    fetch("http://localhost:5000/api/ticket", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name,
+        eventName,
+        eventId,
+        ticketType,
+        tickets,
+        totalPrice: total,
+        paymentMethod,
+        ticketId: ticketID
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      console.log("Ticket stored:", data);
+    })
+    .catch(err => {
+      console.error("Error saving ticket:", err);
+    });
   </script>
+  
 
 </body>
 </html>

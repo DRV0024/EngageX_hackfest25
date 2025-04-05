@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" href="logo.png" type="image/x-icon" />
+  <title>Find Your Event - Chillr</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #2b1055, #7597de);
+      color: white;
+      padding: 50px;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: auto;
+      background: rgba(255,255,255,0.05);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 0 15px #00ffc866;
+    }
+
+    h1 {
+      color: #00ffc8;
+    }
+
+    label {
+      display: block;
+      margin-top: 20px;
+      font-size: 16px;
+      text-align: left;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-top: 5px;
+      border-radius: 10px;
+      border: none;
+      font-size: 16px;
+    }
+
+    button {
+      margin-top: 30px;
+      background: #00ffc8;
+      color: #2b1055;
+      padding: 12px 20px;
+      border: none;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.3s ease;
+      width: 100%;
+    }
+
+    button:hover {
+      background: white;
+      color: #2b1055;
+      box-shadow: 0 0 15px #00ffc8;
+    }
+
+    .welcome {
+      margin-bottom: 20px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Search for Your Event</h1>
+    <p class="welcome" id="welcomeMessage"></p>
+
+    <form onsubmit="searchEvent(event)">
+      <label for="eventName">Event Name *</label>
+      <input type="text" id="eventName" required />
+
+      <label for="eventId">Event ID (optional)</label>
+      <input type="text" id="eventId" />
+
+      <label for="eventDate">Date of Event *</label>
+      <input type="date" id="eventDate" required />
+
+      <button type="submit">Find Event</button>
+    </form>
+  </div>
+
+  <script>
+    // Parse user data from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const name = urlParams.get("name");
+    const email = urlParams.get("email");
+    const role = urlParams.get("role");
+
+    document.getElementById("welcomeMessage").innerText = `Welcome ${name} (${role}) - ${email}`;
+
+    function searchEvent(e) {
+      e.preventDefault();
+
+      const eventName = document.getElementById("eventName").value.trim();
+      const eventId = document.getElementById("eventId").value.trim();
+      const eventDate = document.getElementById("eventDate").value;
+
+      // Redirect to event-details.html with query parameters
+      const query = new URLSearchParams({
+        eventName,
+        eventId,
+        eventDate,
+        name,
+        email,
+        role
+      }).toString();
+
+      window.location.href = `event-details.html?${query}`;
+    }
+  </script>
+</body>
+</html>
