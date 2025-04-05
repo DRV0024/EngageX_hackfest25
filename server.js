@@ -1,49 +1,21 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const bodyParser = require('body-parser');
+require('dotenv').config();
 
 const app = express();
-const PORT = 3000;
-
-// Middleware
 app.use(cors());
-app.use(bodyParser.json());
+app.use(express.json());
 
-// MongoDB Connection
-mongoose.connect('mongodb://127.0.0.1:27017/chillr', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-});
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log("✅ MongoDB connected"))
+  .catch(err => console.log("❌ MongoDB error", err));
 
-const db = mongoose.connection;
-db.once('open', () => console.log("✅ Connected to MongoDB"));
-db.on('error', console.error);
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/event', require('./routes/event'));
+app.use('/api/booking', require('./routes/booking'));
+app.use('/api/payment', require('./routes/payment'));
+app.use('/api/ticket', require('./routes/ticket'));
 
-// ⬇️ IMPORT ROUTES HERE
-const ticketRoutes = require('./routes/tickets');
-
-// ⬇️ USE ROUTES HERE
-app.use('/api', ticketRoutes);
-
-// ⬇️ START SERVER
-app.listen(PORT, () => {
-  console.log(`🚀 Server running at http://localhost:${PORT}`);
-});
-
-const eventRoutes = require('./routes/event');
-app.use('/api/event', eventRoutes);
-
-const Ticket = require('./models/Ticket');
-
-app.post('/api/payment/complete', async (req, res) => {
-  try {
-    const ticketData = req.body;
-    const newTicket = new Ticket(ticketData);
-    await newTicket.save();
-    res.status(200).json({ message: 'Payment and ticket recorded.' });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Error saving ticket data.' });
-  }
-});
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
