@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" href="logo.png" type="image/x-icon" />
+  <title>Your Chillr Ticket</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(270deg, #2b1055, #7597de);
+      color: white;
+      margin: 0;
+      padding: 40px 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .ticket-card {
+      background: #1e1e2f;
+      border: 2px dashed #00ffc8;
+      padding: 30px 40px;
+      border-radius: 20px;
+      text-align: center;
+      max-width: 600px;
+      box-shadow: 0 0 20px #00ffc8;
+      position: relative;
+    }
+
+    .ticket-card h1 {
+      color: #00ffc8;
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+
+    .ticket-info {
+      font-size: 18px;
+      line-height: 1.7;
+    }
+
+    .ticket-id {
+      margin-top: 20px;
+      font-size: 16px;
+      font-style: italic;
+      color: #ccc;
+    }
+
+    .btn {
+      margin-top: 30px;
+      background: #00ffc8;
+      color: #2b1055;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    .btn:hover {
+      background: white;
+      color: #2b1055;
+      box-shadow: 0 0 15px #00ffc8;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="ticket-card" id="ticketCard">
+    <h1>🎫 Chillr Ticket Confirmation</h1>
+    <div class="ticket-info" id="ticketInfo">
+      <!-- Ticket info loaded here -->
+    </div>
+    <div class="ticket-id" id="ticketId">
+      <!-- Ticket ID -->
+    </div>
+    <button class="btn" onclick="window.print()">Download / Print Ticket</button>
+  </div>
+
+  <script>
+    const name = localStorage.getItem("name");
+    const eventName = localStorage.getItem("eventName");
+    const eventId = localStorage.getItem("eventId");
+    const total = localStorage.getItem("totalPrice");
+    const type = localStorage.getItem("ticketType");
+    const tickets = localStorage.getItem("tickets");
+    const paymentMethod = localStorage.getItem("paymentMethod");
+
+    const ticketID = "CHILLR-" + Math.random().toString(36).substr(2, 9).toUpperCase();
+
+    document.getElementById("ticketInfo").innerHTML = `
+      <strong>Name:</strong> ${name}<br>
+      <strong>Event:</strong> ${eventName}<br>
+      <strong>Event ID:</strong> ${eventId}<br>
+      <strong>Tickets:</strong> ${tickets} (${type})<br>
+      <strong>Paid via:</strong> ${paymentMethod}<br>
+      <strong>Total Paid:</strong> ₹${total}
+    `;
+
+    document.getElementById("ticketId").innerText = `Ticket ID: ${ticketID}`;
+  </script>
+
+</body>
+</html>

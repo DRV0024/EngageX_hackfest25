@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" href="logo.png" type="image/x-icon" />
+  <title>Payment - Chillr</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(270deg, #2b1055, #7597de);
+      color: white;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 0 15px #00ffc8;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #00ffc8;
+    }
+
+    .summary {
+      margin-bottom: 30px;
+      line-height: 1.8;
+      font-size: 18px;
+    }
+
+    .payment-options {
+      margin-bottom: 20px;
+    }
+
+    .payment-options label {
+      display: block;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+
+    .btn {
+      background: #00ffc8;
+      color: #2b1055;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 18px;
+      cursor: pointer;
+      transition: 0.3s ease;
+      display: block;
+      width: 100%;
+    }
+
+    .btn:hover {
+      background: white;
+      color: #2b1055;
+      box-shadow: 0 0 20px #00ffc8;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Payment Details</h1>
+
+    <div class="summary" id="summary">
+      <!-- Populated with JS -->
+    </div>
+
+    <div class="payment-options">
+      <h3>Select Payment Method:</h3>
+      <label><input type="radio" name="paymentMethod" value="UPI" checked> UPI</label>
+      <label><input type="radio" name="paymentMethod" value="Card"> Card</label>
+      <label><input type="radio" name="paymentMethod" value="Net Banking"> Net Banking</label>
+    </div>
+
+    <button class="btn" onclick="completePayment()">Complete Payment</button>
+  </div>
+
+  <script>
+    const summaryEl = document.getElementById("summary");
+
+    // Get values from localStorage
+    const name = localStorage.getItem("name");
+    const email = localStorage.getItem("email");
+    const eventName = localStorage.getItem("eventName");
+    const eventId = localStorage.getItem("eventId");
+    const tickets = parseInt(localStorage.getItem("tickets"));
+    const males = localStorage.getItem("males");
+    const females = localStorage.getItem("females");
+    const type = localStorage.getItem("ticketType");
+    const ageRange = localStorage.getItem("ageRange");
+
+    // Set ticket prices
+    const prices = {
+      VIP: 1500,
+      Premium: 1000,
+      General: 500
+    };
+
+    const unitPrice = prices[type] || 0;
+    const total = tickets * unitPrice;
+
+    // Store total price for ticket.html
+    localStorage.setItem("totalPrice", total);
+
+    // Display summary
+    summaryEl.innerHTML = `
+      <strong>Name:</strong> ${name}<br>
+      <strong>Email:</strong> ${email}<br>
+      <strong>Event:</strong> ${eventName}<br>
+      <strong>Event ID:</strong> ${eventId}<br>
+      <strong>Tickets:</strong> ${tickets} (${type})<br>
+      <strong>Males:</strong> ${males}, <strong>Females:</strong> ${females}<br>
+      <strong>Age Range:</strong> ${ageRange}<br>
+      <strong>Price per Ticket:</strong> ₹${unitPrice}<br>
+      <strong>Total:</strong> ₹${total}
+    `;
+    async function completePayment() {
+      const selectedMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+      localStorage.setItem("paymentMethod", selectedMethod);
+  
+      const ticketData = {
+        name,
+        email,
+        eventName,
+        eventId,
+        tickets,
+        males: parseInt(males),
+        females: parseInt(females),
+        ticketType: type,
+        ageRange,
+        paymentMethod: selectedMethod,
+        totalPrice: total
+      };
+  
+      try {
+        const res = await fetch('http://localhost:3000/api/payment/complete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(ticketData)
+        });
+  
+        const result = await res.json();
+        if (res.ok) {
+          alert('Payment successful!');
+          window.location.href = "ticket.html";
+        } else {
+          alert('Error: ' + result.message);
+        }
+      } catch (error) {
+        console.error('Payment error:', error);
+        alert('Server error during payment.');
+      }
+    }
+  </script>
+</body>
+</html>

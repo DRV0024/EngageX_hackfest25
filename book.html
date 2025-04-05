@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" href="logo.png" type="image/x-icon" />
+  <title>Book Tickets - Chillr</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(270deg, #2b1055, #7597de);
+      color: white;
+      padding: 30px 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #00ffc8;
+    }
+
+    form {
+      max-width: 600px;
+      margin: auto;
+      background: #1e1e2f;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px #00ffc8;
+    }
+
+    label {
+      display: block;
+      margin: 15px 0 5px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      margin-bottom: 10px;
+    }
+
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      background: #00ffc8;
+      color: #2b1055;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    button:hover {
+      background: white;
+      color: #2b1055;
+      box-shadow: 0 0 15px #00ffc8;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Book Your Ticket</h1>
+  <form id="bookingForm">
+    <label for="name">Full Name:</label>
+    <input type="text" id="name" required>
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" required>
+
+    <label for="eventName">Event Name:</label>
+    <input type="text" id="eventName" required>
+
+    <label for="eventId">Event ID:</label>
+    <input type="text" id="eventId" required>
+
+    <label for="tickets">Number of Tickets:</label>
+    <input type="number" id="tickets" min="1" value="1" required>
+
+    <label for="males">Number of Males:</label>
+    <input type="number" id="males" min="0" value="0" required>
+
+    <label for="females">Number of Females:</label>
+    <input type="number" id="females" min="0" value="0" required>
+
+    <label for="ticketType">Ticket Type:</label>
+    <select id="ticketType" required>
+      <option value="General">General</option>
+      <option value="Premium">Premium</option>
+      <option value="VIP">VIP</option>
+    </select>
+
+    <label for="ageRange">Age Range:</label>
+    <select id="ageRange" required>
+      <option value="Below 18">Below 18</option>
+      <option value="18-25">18 - 25</option>
+      <option value="26-40">26 - 40</option>
+      <option value="41+">41+</option>
+    </select>
+
+    <button type="submit">Proceed to Payment</button>
+  </form>
+
+  <script>
+    document.getElementById("bookingForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      // Get all values
+      const name = document.getElementById("name").value;
+      const email = document.getElementById("email").value;
+      const eventName = document.getElementById("eventName").value;
+      const eventId = document.getElementById("eventId").value;
+      const tickets = document.getElementById("tickets").value;
+      const males = document.getElementById("males").value;
+      const females = document.getElementById("females").value;
+      const ticketType = document.getElementById("ticketType").value;
+      const ageRange = document.getElementById("ageRange").value;
+
+      // Save to localStorage
+      localStorage.setItem("name", name);
+      localStorage.setItem("email", email);
+      localStorage.setItem("eventName", eventName);
+      localStorage.setItem("eventId", eventId);
+      localStorage.setItem("tickets", tickets);
+      localStorage.setItem("males", males);
+      localStorage.setItem("females", females);
+      localStorage.setItem("ticketType", ticketType);
+      localStorage.setItem("ageRange", ageRange);
+
+      // Send to backend
+      const bookingData = {
+        name,
+        email,
+        eventName,
+        eventID: eventId,
+        numTickets: tickets,
+        numMale: males,
+        numFemale: females,
+        ticketType,
+        ageRange
+      };
+
+      try {
+        const response = await fetch("http://localhost:3000/api/book", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(bookingData)
+        });
+
+        if (response.ok) {
+          alert("Booking saved successfully!");
+          window.location.href = "payment.html";
+        } else {
+          alert("Failed to save booking. Please try again.");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        alert("Error connecting to server.");
+      }
+    });
+  </script>
+
+</body>
+</html>

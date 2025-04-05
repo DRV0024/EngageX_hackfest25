@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" href="logo.png" type="image/x-icon" />
+  <title>Organise Event - Chillr</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #2b1055, #7597de);
+      color: white;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 50px auto;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0, 255, 200, 0.5);
+    }
+
+    h2 {
+      text-align: center;
+      color: #00ffc8;
+      margin-bottom: 30px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    input[type="file"] {
+      background-color: #fff;
+      color: #2b1055;
+      padding: 8px;
+      font-weight: 500;
+    }
+
+    .price-section {
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+
+    .price-section input {
+      width: 100%;
+    }
+
+    button {
+      margin-top: 30px;
+      width: 100%;
+      padding: 15px;
+      background-color: #00ffc8;
+      color: #2b1055;
+      border: none;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    button:hover {
+      background-color: white;
+      color: #2b1055;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Organise Your Event</h2>
+    <form id="organiseForm" enctype="multipart/form-data">
+      <label for="organizerName">Organizer Name:</label>
+      <input type="text" id="organizerName" name="organizerName" required>
+
+      <label for="organizerEmail">Email:</label>
+      <input type="email" id="organizerEmail" name="organizerEmail" required>
+
+      <label for="eventName">Event Name:</label>
+      <input type="text" id="eventName" name="eventName" required>
+
+      <label for="eventId">Event ID:</label>
+      <input type="text" id="eventId" name="eventId" required>
+
+      <label for="venue">Venue:</label>
+      <input type="text" id="venue" name="venue" required>
+
+      <label for="date">Event Date:</label>
+      <input type="date" id="date" name="date" required>
+
+      <label>Set Ticket Prices (INR):</label>
+      <div class="price-section">
+        <input type="number" name="vipPrice" placeholder="VIP Price" min="0" required>
+        <input type="number" name="premiumPrice" placeholder="Premium Price" min="0" required>
+        <input type="number" name="generalPrice" placeholder="General Price" min="0" required>
+      </div>
+      
+      <label for="description">Event Description:</label>
+      <textarea id="description" name="description" rows="4" placeholder="Tell us a bit about your event..."></textarea>
+
+      <label for="poster">Upload Event Poster:</label>
+      <input type="file" id="poster" name="poster" accept="image/*" required>
+
+      <button type="submit">Submit Event</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('organiseForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const form = e.target;
+      const formData = new FormData(form);
+
+      try {
+        const response = await fetch('http://localhost:3000/api/event/submit', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          alert(data.message || "Event submitted successfully!");
+          window.location.href = "organise-submit.html";
+        } else {
+          const error = await response.json();
+          alert(error.message || "Submission failed.");
+        }
+      } catch (err) {
+        console.error(err);
+        alert("An error occurred while submitting the event.");
+      }
+    });
+  </script>
+
+</body>
+</html>

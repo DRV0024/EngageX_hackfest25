@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" href="logo.png" type="image/x-icon" />
+  <title>Organise Confirmation - Chillr</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #2b1055, #7597de);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: white;
+      text-align: center;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px #00ffc8;
+      max-width: 500px;
+    }
+
+    h1 {
+      font-size: 36px;
+      margin-bottom: 20px;
+      color: #00ffc8;
+      text-shadow: 0 0 10px #00ffc8;
+    }
+
+    p {
+      font-size: 18px;
+      line-height: 1.6;
+      margin-bottom: 30px;
+    }
+
+    .btn {
+      background: #00ffc8;
+      color: #2b1055;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 16px;
+      text-decoration: none;
+      box-shadow: 0 0 15px #00ffc8;
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      background: white;
+      color: #2b1055;
+      transform: scale(1.05);
+      box-shadow: 0 0 25px #00ffc8;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Thank You!</h1>
+    <p id="confirmationMessage">
+      Your event has been successfully submitted for review and listing.<br>
+      We'll get in touch with you shortly regarding the approval and next steps.
+    </p>
+    <a class="btn" href="index.html">Back to Home</a>
+  </div>
+
+  <script>
+    const eventName = localStorage.getItem("eventName");
+    const eventId = localStorage.getItem("eventId");
+
+    if (eventName || eventId) {
+      const message = `Your event <strong>${eventName || eventId}</strong> has been successfully submitted for review and listing.<br>
+      We'll get in touch with you shortly regarding the approval and next steps.`;
+      document.getElementById("confirmationMessage").innerHTML = message;
+    }
+
+    // OPTIONAL: Notify backend of confirmation stage (e.g., analytics/logging)
+    async function notifyBackend() {
+      if (eventId && eventName) {
+        try {
+          await fetch("http://localhost:3000/api/event/confirm", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ eventId, eventName })
+          });
+        } catch (err) {
+          console.error("Backend notification failed", err);
+        }
+      }
+    }
+
+    notifyBackend();
+  </script>
+</body>
+</html>
