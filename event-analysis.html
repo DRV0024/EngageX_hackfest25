@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Event Analysis - Chillr</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #2b1055, #7597de);
+      color: white;
+      padding: 40px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 0 15px #00ffc8aa;
+    }
+
+    h1, h2 {
+      color: #00ffc8;
+      text-align: center;
+    }
+
+    .section {
+      margin-top: 30px;
+    }
+
+    .event-info, .analytics {
+      padding: 20px;
+      background-color: rgba(0, 0, 0, 0.2);
+      border-radius: 12px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      padding: 6px 0;
+      font-size: 16px;
+    }
+
+    .error {
+      color: red;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Event Analysis</h1>
+    <div class="section event-info">
+      <h2>Event Details</h2>
+      <ul id="eventDetails"></ul>
+    </div>
+    <div class="section analytics">
+      <h2>Booking Analytics</h2>
+      <ul id="eventAnalytics"></ul>
+    </div>
+    <p class="error" id="errorMessage"></p>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const eventId = params.get("eventId");
+
+    async function fetchAnalysis() {
+      try {
+        const res = await fetch(`/api/event/analysis/${eventId}`);
+        if (!res.ok) throw new Error("Event not found.");
+        const data = await res.json();
+
+        const { event, analytics } = data;
+
+        document.getElementById("eventDetails").innerHTML = `
+          <li><strong>Name:</strong> ${event.eventName}</li>
+          <li><strong>Organizer:</strong> ${event.organizerName} (${event.organizerEmail})</li>
+          <li><strong>Date:</strong> ${event.date}</li>
+          <li><strong>Venue:</strong> ${event.venue}</li>
+          <li><strong>Description:</strong> ${event.description}</li>
+        `;
+
+        document.getElementById("eventAnalytics").innerHTML = `
+          <li><strong>Total Bookings:</strong> ${analytics.totalBookings}</li>
+          <li><strong>Male Attendees:</strong> ${analytics.totalMales}</li>
+          <li><strong>Female Attendees:</strong> ${analytics.totalFemales}</li>
+          <li><strong>Age Distribution:</strong></li>
+          <ul>
+            ${Object.entries(analytics.ageRanges).map(([range, count]) =>
+              `<li>${range}: ${count}</li>`
+            ).join('')}
+          </ul>
+          <li><strong>Ticket Type Breakdown:</strong></li>
+          <ul>
+            ${Object.entries(analytics.ticketTypes).map(([type, count]) =>
+              `<li>${type}: ${count}</li>`
+            ).join('')}
+          </ul>
+        `;
+      } catch (err) {
+        document.getElementById("errorMessage").innerText = err.message;
+      }
+    }
+
+    fetchAnalysis();
+  </script>
+</body>
+</html>
